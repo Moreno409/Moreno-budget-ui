@@ -1,1 +1,65 @@
-Expense List
+<ion-content>
+  <div class="expense-list-container">
+    <!-- Page Title -->
+    <h1 class="page-title">Expenses</h1>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <ion-item button class="filter-item">
+        <ion-label>Date (newest first)</ion-label>
+        <ion-icon slot="end" name="swap-vertical" />
+      </ion-item>
+
+      <ion-item button class="filter-item">
+        <ion-icon slot="start" name="pricetag" />
+        <ion-label>Category</ion-label>
+      </ion-item>
+
+      <ion-searchbar
+        placeholder="Search"
+        class="search-bar"
+      />
+    </div>
+
+    <!-- Expense List -->
+    <div class="expense-list">
+      @for (expenseGroup of expenseGroups; track expenseGroup.expenses[0].date) {
+        <div class="expense-group">
+          <div class="date-header">{{ formatExpenseDate(expenseGroup.expenses[0].date) }}</div>
+          @for (expense of expenseGroup.expenses; track expense.id) {
+            <ion-item button class="expense-item" (click)="openExpenseModal(expense)">
+              <ion-label>
+                <h2>{{ expense.name }}</h2>
+              </ion-label>
+              <ion-label slot="end" class="amount-label">
+                CHF {{ formatAmount(expense.amount) }}
+              </ion-label>
+              <ion-icon slot="end" name="chevron-forward-outline" class="chevron-icon" />
+            </ion-item>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="bottom-bar">
+      <div class="month-navigation">
+        <ion-button fill="clear" (click)="addMonths(-1)">
+          <ion-icon slot="icon-only" name="arrow-back" />
+        </ion-button>
+        <span class="month-label">{{ formatMonth(date) }}</span>
+        <ion-button fill="clear" (click)="addMonths(1)">
+          <ion-icon slot="icon-only" name="arrow-forward" />
+        </ion-button>
+      </div>
+
+      <ion-button
+        class="add-button"
+        shape="round"
+        (click)="openExpenseModal()"
+      >
+        <ion-icon slot="icon-only" name="add" />
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

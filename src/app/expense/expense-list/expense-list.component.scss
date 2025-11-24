@@ -1,0 +1,111 @@
+.expense-list-container {
+  padding: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+  color: var(--ion-text-color);
+}
+
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  align-items: center;
+
+  .filter-item {
+    --background: var(--ion-color-step-100);
+    --border-radius: 8px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --min-height: 44px;
+    flex: 0 0 auto;
+  }
+
+  .search-bar {
+    flex: 1;
+    --background: var(--ion-color-step-100);
+    --border-radius: 8px;
+    --box-shadow: none;
+    padding: 0;
+  }
+}
+
+.expense-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.expense-group {
+  margin-bottom: 24px;
+
+  .date-header {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ion-color-medium);
+    margin-bottom: 8px;
+    padding: 0 16px;
+  }
+
+  .expense-item {
+    --background: var(--ion-color-step-100);
+    --border-radius: 8px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --min-height: 56px;
+    margin-bottom: 8px;
+
+    h2 {
+      font-size: 16px;
+      font-weight: 400;
+      margin: 0;
+    }
+
+    .amount-label {
+      font-size: 16px;
+      font-weight: 500;
+      text-align: right;
+    }
+
+    .chevron-icon {
+      color: var(--ion-color-medium);
+      font-size: 20px;
+    }
+  }
+}
+
+.bottom-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  margin-top: auto;
+
+  .month-navigation {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .month-label {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--ion-text-color);
+      min-width: 120px;
+      text-align: center;
+    }
+  }
+
+  .add-button {
+    --border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    --background: var(--ion-color-primary);
+    --color: white;
+  }
+}
+

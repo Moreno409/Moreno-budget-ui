@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { addIcons } from 'ionicons';
-import { analytics, logOut, podium, pricetag } from 'ionicons/icons';
+import { analytics, logOut, logOutOutline, podium, pricetag } from 'ionicons/icons';
 import { categoriesPath } from './category/category.routes';
 import { expensesPath } from './expense/expense.routes';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import {
   IonApp,
+  IonButton,
   IonContent,
   IonIcon,
   IonItem,
@@ -36,7 +37,8 @@ import {
     IonMenuToggle,
     IonItem,
     IonIcon,
-    IonRouterOutlet
+    IonRouterOutlet,
+    IonButton
   ]
 })
 export default class AppComponent {
@@ -47,6 +49,10 @@ export default class AppComponent {
 
   constructor() {
     // Add all used Ionic icons
-    addIcons({ analytics, logOut, podium, pricetag });
+    addIcons({ analytics, logOut, logOutOutline, podium, pricetag });
+  }
+
+  logout(): void {
+    console.log('Logout clicked');
   }
 }
