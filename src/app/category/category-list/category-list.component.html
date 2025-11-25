@@ -1,1 +1,48 @@
-Category List
+<ion-content>
+  <div class="category-list-container">
+    <!-- Page Title -->
+    <h1 class="page-title">Categories</h1>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <ion-item button class="filter-item" (click)="toggleSort()">
+        <ion-icon slot="start" name="swap-vertical" />
+        <ion-label>{{ sortLabel }}</ion-label>
+        <ion-icon slot="end" name="chevron-down-outline" />
+      </ion-item>
+
+      <ion-searchbar
+        placeholder="Search"
+        class="search-bar"
+        [value]="searchTerm"
+        (ionInput)="onSearchChange($event)"
+      />
+    </div>
+
+    <!-- Category List -->
+    <div class="category-list">
+      @for (category of filteredCategories; track category.id) {
+        <ion-item button class="category-item" (click)="openCategoryModal(category)">
+          <ion-label>
+            <h2>{{ category.name }}</h2>
+          </ion-label>
+          <ion-icon slot="end" name="chevron-forward-outline" class="chevron-icon" />
+        </ion-item>
+      }
+      @empty {
+        <div class="empty-state">
+          <p>No categories found</p>
+        </div>
+      }
+    </div>
+
+    <!-- Floating Action Button -->
+    <ion-button
+      class="fab-button"
+      shape="round"
+      (click)="openModal()"
+    >
+      <ion-icon slot="icon-only" name="add" />
+    </ion-button>
+  </div>
+</ion-content>
