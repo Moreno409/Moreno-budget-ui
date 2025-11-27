@@ -44,6 +44,21 @@ ion-header {
       --placeholder-color: var(--ion-color-medium);
       --color: var(--ion-text-color);
     }
+
+    &.error {
+      --border-color: var(--ion-color-danger);
+      --border-width: 1px;
+      --border-style: solid;
+    }
+  }
+
+  .error-message {
+    color: var(--ion-color-danger);
+    font-size: 12px;
+    margin-top: -12px;
+    margin-bottom: 16px;
+    margin-left: 16px;
+    padding-left: 48px;
   }
 }
 

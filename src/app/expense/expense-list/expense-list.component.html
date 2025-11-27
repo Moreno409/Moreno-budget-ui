@@ -23,21 +23,31 @@
 
     <!-- Expense List -->
     <div class="expense-list">
-      @for (expenseGroup of expenseGroups; track expenseGroup.expenses[0].date) {
-        <div class="expense-group">
-          <div class="date-header">{{ formatExpenseDate(expenseGroup.expenses[0].date) }}</div>
-          @for (expense of expenseGroup.expenses; track expense.id) {
-            <ion-item button class="expense-item" (click)="openExpenseModal(expense)">
-              <ion-label>
-                <h2>{{ expense.name }}</h2>
-              </ion-label>
-              <ion-label slot="end" class="amount-label">
-                CHF {{ formatAmount(expense.amount) }}
-              </ion-label>
-              <ion-icon slot="end" name="chevron-forward-outline" class="chevron-icon" />
-            </ion-item>
-          }
+      @if (expenseGroups.length === 0) {
+        <div class="empty-state">
+          <p>Keine Ausgaben für diesen Monat</p>
+          <p class="empty-state-hint">Tippen Sie auf das + Symbol, um eine neue Ausgabe zu erstellen</p>
         </div>
+      } @else {
+        @for (expenseGroup of expenseGroups; track expenseGroup.date) {
+          <div class="expense-group">
+            <div class="date-header">{{ formatExpenseDate(expenseGroup.date) }}</div>
+            @for (expense of expenseGroup.expenses; track expense.id) {
+              <ion-item button class="expense-item" (click)="openExpenseModal(expense)">
+                <ion-label>
+                  <h2>{{ expense.name }}</h2>
+                  @if (expense.category?.name) {
+                    <p class="category-name">{{ expense.category.name }}</p>
+                  }
+                </ion-label>
+                <ion-label slot="end" class="amount-label">
+                  CHF {{ formatAmount(expense.amount) }}
+                </ion-label>
+                <ion-icon slot="end" name="chevron-forward-outline" class="chevron-icon" />
+              </ion-item>
+            }
+          </div>
+        }
       }
     </div>
 

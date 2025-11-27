@@ -1,6 +1,6 @@
 import { Component, inject, Input } from '@angular/core';
 import { ModalController, NavParams } from '@ionic/angular/standalone';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
 import { close, save, text } from 'ionicons/icons';
@@ -41,16 +41,22 @@ export default class CategoryModalComponent {
   // DI
   private readonly modalCtrl = inject(ModalController);
   private readonly navParams = inject(NavParams);
+  private readonly fb = inject(FormBuilder);
 
   // State
   category: Category | undefined = this.navParams.get('category');
-  name = this.category?.name || '';
+  categoryForm: FormGroup;
 
   // Lifecycle
 
   constructor() {
     // Add all used Ionic icons
     addIcons({ close, save, text });
+    
+    // Initialize form
+    this.categoryForm = this.fb.group({
+      name: [this.category?.name || '', [Validators.required, Validators.minLength(1)]]
+    });
   }
 
   // Actions
@@ -60,10 +66,29 @@ export default class CategoryModalComponent {
   }
 
   save(): void {
-    this.modalCtrl.dismiss(null, 'save');
+    // Mark all fields as touched to show validation errors
+    this.categoryForm.markAllAsTouched();
+    
+    if (this.categoryForm.valid) {
+      const formValue = this.categoryForm.value;
+      // Create a new category object with a temporary ID
+      // In a real app, this would be created via an API call
+      const newCategory: Category = {
+        id: this.category?.id || `temp-${Date.now()}`,
+        name: formValue.name,
+        createdAt: this.category?.createdAt || new Date().toISOString(),
+        lastModifiedAt: new Date().toISOString()
+      };
+      this.modalCtrl.dismiss(newCategory, 'save');
+    }
   }
 
   onNameChange(event: any): void {
-    this.name = event.detail.value;
+    this.categoryForm.patchValue({ name: event.detail.value });
+    this.categoryForm.get('name')?.markAsTouched();
+  }
+
+  get isFormValid(): boolean {
+    return this.categoryForm.valid;
   }
 }

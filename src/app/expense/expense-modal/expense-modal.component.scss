@@ -57,6 +57,21 @@ ion-header {
       color: var(--ion-text-color);
       margin-left: 8px;
     }
+
+    &.error {
+      --border-color: var(--ion-color-danger);
+      --border-width: 1px;
+      --border-style: solid;
+    }
+  }
+
+  .error-message {
+    color: var(--ion-color-danger);
+    font-size: 12px;
+    margin-top: -12px;
+    margin-bottom: 16px;
+    margin-left: 16px;
+    padding-left: 48px;
   }
 
   .delete-button {
@@ -68,6 +83,24 @@ ion-header {
     --background: var(--ion-color-danger);
     --color: white;
     float: right;
+  }
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  pointer-events: none;
+
+  ion-spinner {
+    --color: var(--ion-color-primary);
   }
 }
 

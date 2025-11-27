@@ -8,7 +8,7 @@
     </ion-buttons>
     <ion-title>{{ category ? 'Edit category' : 'Add category' }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="save()">
+      <ion-button (click)="save()" [disabled]="!isFormValid">
         <ion-icon name="save" />
         <ion-label>SAVE</ion-label>
       </ion-button>
@@ -17,15 +17,22 @@
 </ion-header>
 
 <ion-content>
-  <div class="modal-content">
-    <!-- Name Field -->
-    <ion-item class="input-item">
-      <ion-icon slot="start" name="text" class="input-icon" />
-      <ion-input
-        placeholder="Name"
-        [value]="name"
-        (ionInput)="onNameChange($event)"
-      />
-    </ion-item>
-  </div>
+  <form [formGroup]="categoryForm" (ngSubmit)="save()">
+    <div class="modal-content">
+      <!-- Name Field -->
+      <div>
+        <ion-item class="input-item" [class.error]="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched">
+          <ion-icon slot="start" name="text" class="input-icon" />
+          <ion-input
+            placeholder="Name"
+            formControlName="name"
+            (ionInput)="onNameChange($event)"
+          />
+        </ion-item>
+        @if (categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched) {
+          <div class="error-message">Name ist erforderlich</div>
+        }
+      </div>
+    </div>
+  </form>
 </ion-content>

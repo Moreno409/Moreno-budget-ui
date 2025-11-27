@@ -1,15 +1,19 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{ expense ? 'Edit Expense' : 'Add Expense' }}</ion-title>
+    <ion-title>{{ expense ? 'Ausgabe bearbeiten' : 'Ausgabe erstellen' }}</ion-title>
     <ion-buttons slot="start">
-      <ion-button (click)="cancel()">
+      <ion-button (click)="cancel()" [disabled]="isLoading">
         <ion-icon name="close" />
         <ion-label>CANCEL</ion-label>
       </ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button (click)="save()">
-        <ion-icon name="save" />
+      <ion-button (click)="save()" [disabled]="!isFormValid">
+        @if (isLoading) {
+          <ion-spinner name="crescent" />
+        } @else {
+          <ion-icon name="save" />
+        }
         <ion-label>SAVE</ion-label>
       </ion-button>
     </ion-buttons>
@@ -17,73 +21,122 @@
 </ion-header>
 
 <ion-content>
-  <div class="modal-content">
-    <!-- Name Field -->
-    <ion-item class="input-item">
-      <ion-icon slot="start" name="text" class="input-icon" />
-      <ion-input
-        placeholder="Name"
-        [value]="name"
-        (ionInput)="onNameChange($event)"
-      />
-    </ion-item>
-
-    <!-- Category Field -->
-    <ion-item class="input-item">
-      <ion-icon slot="start" name="pricetag" class="input-icon" />
-      <ion-select placeholder="Category" [value]="expense?.category?.id">
-        <ion-select-option value="">Category</ion-select-option>
-      </ion-select>
-      <ion-button
-        slot="end"
-        fill="clear"
-        size="small"
-        class="add-category-button"
-        (click)="showCategoryModal()"
-      >
-        <ion-icon slot="icon-only" name="add" />
-      </ion-button>
-    </ion-item>
-
-    <!-- Amount Field -->
-    <ion-item class="input-item">
-      <ion-icon slot="start" name="cash" class="input-icon" />
-      <ion-input
-        type="number"
-        placeholder="Amount"
-        [value]="amount"
-        (ionInput)="onAmountChange($event)"
-      />
-      <ion-label slot="end" class="currency-label">CHF</ion-label>
-    </ion-item>
-
-    <!-- Date Field -->
-    <ion-item class="input-item" button (click)="openDatePicker()">
-      <ion-icon slot="start" name="calendar" class="input-icon" />
-      <ion-label>{{ formatDisplayDate(date) }}</ion-label>
-      <ion-datetime-button datetime="datetime" />
-      <ion-modal [keepContentsMounted]="true">
-        <ng-template>
-          <ion-datetime
-            id="datetime"
-            presentation="date"
-            [value]="date"
-            (ionChange)="onDateChange($event)"
+  <form [formGroup]="expenseForm" (ngSubmit)="save()">
+    <div class="modal-content">
+      <!-- Name Field -->
+      <div>
+        <ion-item class="input-item" [class.error]="expenseForm.get('name')?.invalid && expenseForm.get('name')?.touched">
+          <ion-icon slot="start" name="text" class="input-icon" />
+          <ion-input
+            #nameInput
+            placeholder="Name"
+            formControlName="name"
+            [disabled]="isLoading"
+            (ionInput)="onNameChange($event)"
           />
-        </ng-template>
-      </ion-modal>
-    </ion-item>
+        </ion-item>
+        @if (expenseForm.get('name')?.invalid && expenseForm.get('name')?.touched) {
+          <div class="error-message">Name ist erforderlich</div>
+        }
+      </div>
 
-    <!-- Delete Button (only for edit mode) -->
-    @if (expense) {
-      <ion-button
-        fill="clear"
-        color="danger"
-        class="delete-button"
-        (click)="delete()"
-      >
-        <ion-icon slot="icon-only" name="trash" />
-      </ion-button>
-    }
-  </div>
+      <!-- Category Field -->
+      <ion-item class="input-item">
+        <ion-icon slot="start" name="pricetag" class="input-icon" />
+        <ion-select 
+          placeholder="Kategorie (optional)" 
+          formControlName="categoryId"
+          [disabled]="isLoading"
+          (ionChange)="onCategoryChange($event)"
+        >
+          <ion-select-option value="">Keine Kategorie</ion-select-option>
+          @for (category of categories; track category.id) {
+            <ion-select-option [value]="category.id">{{ category.name }}</ion-select-option>
+          }
+        </ion-select>
+        <ion-button
+          slot="end"
+          fill="clear"
+          size="small"
+          class="add-category-button"
+          [disabled]="isLoading"
+          (click)="showCategoryModal()"
+        >
+          <ion-icon slot="icon-only" name="add" />
+        </ion-button>
+      </ion-item>
+
+      <!-- Amount Field -->
+      <div>
+        <ion-item class="input-item" [class.error]="expenseForm.get('amount')?.invalid && expenseForm.get('amount')?.touched">
+          <ion-icon slot="start" name="cash" class="input-icon" />
+          <ion-input
+            type="number"
+            placeholder="Betrag"
+            formControlName="amount"
+            [disabled]="isLoading"
+            (ionInput)="onAmountChange($event)"
+            step="0.01"
+            min="0.01"
+          />
+          <ion-label slot="end" class="currency-label">CHF</ion-label>
+        </ion-item>
+        @if (expenseForm.get('amount')?.invalid && expenseForm.get('amount')?.touched) {
+          <div class="error-message">Betrag muss größer als 0 sein</div>
+        }
+      </div>
+
+      <!-- Date Field -->
+      <div>
+        <ion-item 
+          class="input-item" 
+          [button]="!isLoading"
+          (click)="!isLoading && openDatePicker()" 
+          [class.error]="expenseForm.get('date')?.invalid && expenseForm.get('date')?.touched"
+        >
+          <ion-icon slot="start" name="calendar" class="input-icon" />
+          <ion-label>{{ formatDisplayDate(expenseForm.get('date')?.value || '') }}</ion-label>
+          <ion-datetime-button datetime="datetime" [disabled]="isLoading" />
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime
+                id="datetime"
+                presentation="date"
+                [value]="expenseForm.get('date')?.value"
+                [disabled]="isLoading"
+                (ionChange)="onDateChange($event)"
+              />
+            </ng-template>
+          </ion-modal>
+        </ion-item>
+        @if (expenseForm.get('date')?.invalid && expenseForm.get('date')?.touched) {
+          <div class="error-message">Datum ist erforderlich</div>
+        }
+      </div>
+
+      <!-- Delete Button (only for edit mode) -->
+      @if (expense) {
+        <ion-button
+          fill="clear"
+          color="danger"
+          class="delete-button"
+          [disabled]="isLoading"
+          (click)="delete()"
+        >
+          @if (isLoading) {
+            <ion-spinner name="crescent" />
+          } @else {
+            <ion-icon slot="icon-only" name="trash" />
+          }
+        </ion-button>
+      }
+    </div>
+  </form>
+
+  <!-- Loading Spinner Overlay -->
+  @if (isLoading) {
+    <div class="loading-overlay">
+      <ion-spinner name="crescent" />
+    </div>
+  }
 </ion-content>
